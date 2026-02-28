@@ -1,9 +1,25 @@
-# ZenStack V3 Quick Start Project
+# ZenStack Zod Integration Sample
 
-The project demonstrates a minimum TypeScript application that uses ZenStack with Sql.js (a WASM port of SQLite).
+This project demonstrates how to use the [`@zenstackhq/zod`](https://www.npmjs.com/package/@zenstackhq/zod) package to generate [Zod](https://zod.dev) validation schemas from a [ZenStack](https://zenstack.dev) model.
 
-To run the project:
+The ZenStack schema (`zenstack/schema.zmodel`) defines two models — `User` and `Post`. Using `createSchemaFactory`, the sample derives Zod schemas for reading, creating, and updating these models, then validates data against them.
 
-- `npm install`
-- `npm run generate`
-- `npm run dev`
+## Setup
+
+```bash
+npm install
+```
+
+## Run
+
+```bash
+npm run dev
+```
+
+## Regenerate Schema
+
+If you modify `zenstack/schema.zmodel`, regenerate the TypeScript schema with:
+
+```bash
+npm run generate
+```
