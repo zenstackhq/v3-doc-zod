@@ -1,49 +1,73 @@
 import { createSchemaFactory } from '@zenstackhq/zod';
+import { globalRegistry } from 'zod';
 import { schema } from './zenstack/schema';
 
 // Create a schema factory from the ZenStack schema
 const factory = createSchemaFactory(schema);
 
-// Build Zod schemas for the User and Post models
-const UserSchema = factory.makeModelSchema('User');
+// --- Enum schema ---
+// `Role` enum has two values: USER and ADMIN
+const RoleSchema = factory.makeEnumSchema('Role');
+
+// Valid enum value
+console.log('RoleSchema.parse (valid):', RoleSchema.parse('ADMIN'));
+
+// Invalid enum value
+const roleResult = RoleSchema.safeParse('SUPERUSER');
+console.log('RoleSchema.safeParse (invalid):', roleResult.success ? 'valid' : roleResult.error.issues);
+
+// --- Type definition schema ---
+// `Profile` is a composite type; its `website` field carries @url validation
+const ProfileSchema = factory.makeTypeSchema('Profile');
+
+// Valid profile
+console.log('ProfileSchema.parse (valid):', ProfileSchema.parse({ bio: 'A developer', website: 'https://example.com' }));
+
+// Invalid profile — website fails @url validation
+const profileResult = ProfileSchema.safeParse({ website: 'not-a-url' });
+console.log('ProfileSchema.safeParse (invalid website):', profileResult.success ? 'valid' : profileResult.error.issues);
+
+// --- Model create schema with @email validation attribute ---
+// UserCreateSchema: the `email` field has @email, so Zod enforces email format
 const UserCreateSchema = factory.makeModelCreateSchema('User');
-const UserUpdateSchema = factory.makeModelUpdateSchema('User');
-const PostCreateSchema = factory.makeModelCreateSchema('Post');
 
-// Valid user create input
-const validUserInput = { email: 'alice@example.com' };
-console.log('UserCreateSchema.parse (valid):', UserCreateSchema.parse(validUserInput));
+// Valid create input
+console.log('UserCreateSchema.parse (valid):', UserCreateSchema.parse({ email: 'alice@example.com' }));
 
-// Invalid user create input (wrong type for email)
-const invalidUserInput = { email: 123 };
-const userResult = UserCreateSchema.safeParse(invalidUserInput);
-console.log('UserCreateSchema.safeParse (invalid):', userResult.success ? 'valid' : userResult.error.issues);
+// Invalid email format — rejected by the @email attribute
+const emailResult = UserCreateSchema.safeParse({ email: 'not-an-email' });
+console.log('UserCreateSchema.safeParse (invalid email):', emailResult.success ? 'valid' : emailResult.error.issues);
 
-// Valid post create input
-const validPostInput = { title: 'Hello World', content: 'My first post' };
-console.log('PostCreateSchema.parse (valid):', PostCreateSchema.parse(validPostInput));
+// Invalid field type
+const typeResult = UserCreateSchema.safeParse({ email: 123 });
+console.log('UserCreateSchema.safeParse (invalid type):', typeResult.success ? 'valid' : typeResult.error.issues);
 
-// Validate a full user object (including nested posts) against UserSchema
+// --- Full model read schema ---
+const UserSchema = factory.makeModelSchema('User');
+
 const userData = {
   id: 1,
   email: 'alice@example.com',
-  posts: [
-    {
-      id: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      title: 'Hello World',
-      content: 'My first post',
-      slug: null,
-      viewCount: 0,
-      published: false,
-      authorId: 1,
-    },
-  ],
+  role: 'ADMIN',
+  profile: { bio: 'A developer', website: 'https://example.com' },
+  posts: [],
 };
-const parsed = UserSchema.parse(userData);
-console.log('UserSchema.parse:', JSON.stringify(parsed, null, 2));
+console.log('UserSchema.parse:', JSON.stringify(UserSchema.parse(userData), null, 2));
 
-// Validate a user update payload (all fields are optional)
-const userUpdate = UserUpdateSchema.parse({ email: 'alice2@example.com' });
-console.log('UserUpdateSchema.parse:', userUpdate);
+// --- Model update schema ---
+const UserUpdateSchema = factory.makeModelUpdateSchema('User');
+console.log('UserUpdateSchema.parse:', UserUpdateSchema.parse({ email: 'alice2@example.com', role: 'USER' }));
+
+// --- Post create schema ---
+const PostCreateSchema = factory.makeModelCreateSchema('Post');
+console.log('PostCreateSchema.parse (valid):', PostCreateSchema.parse({ title: 'Hello World', content: 'My first post' }));
+
+// --- @@meta description metadata ---
+// @@meta('description', '...') on a model, type, or enum is turned into Zod schema
+// metadata, accessible via z.globalRegistry.get(schema).
+console.log('UserCreateSchema description:', globalRegistry.get(UserCreateSchema)?.description);
+console.log('ProfileSchema description:   ', globalRegistry.get(ProfileSchema)?.description);
+console.log('RoleSchema description:      ', globalRegistry.get(RoleSchema)?.description);
+
+// @meta('description', '...') on a field is reflected on the individual field schema
+console.log('email field description:     ', globalRegistry.get(UserCreateSchema.shape.email)?.description);

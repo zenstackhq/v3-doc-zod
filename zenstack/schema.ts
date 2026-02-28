@@ -25,7 +25,19 @@ export class SchemaType implements SchemaDef {
                     name: "email",
                     type: "String",
                     unique: true,
-                    attributes: [{ name: "@unique" }]
+                    attributes: [{ name: "@unique" }, { name: "@email" }, { name: "@meta", args: [{ name: "name", value: ExpressionUtils.literal("description") }, { name: "value", value: ExpressionUtils.literal("The unique email address of the user") }] }]
+                },
+                role: {
+                    name: "role",
+                    type: "Role",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("USER") }] }],
+                    default: "USER"
+                },
+                profile: {
+                    name: "profile",
+                    type: "Profile",
+                    optional: true,
+                    attributes: [{ name: "@json" }]
                 },
                 posts: {
                     name: "posts",
@@ -34,6 +46,9 @@ export class SchemaType implements SchemaDef {
                     relation: { opposite: "author" }
                 }
             },
+            attributes: [
+                { name: "@@meta", args: [{ name: "name", value: ExpressionUtils.literal("description") }, { name: "value", value: ExpressionUtils.literal("A registered user of the application") }] }
+            ],
             idFields: ["id"],
             uniqueFields: {
                 id: { type: "Int" },
@@ -111,6 +126,39 @@ export class SchemaType implements SchemaDef {
                 id: { type: "Int" },
                 slug: { type: "String" }
             }
+        }
+    } as const;
+    typeDefs = {
+        Profile: {
+            name: "Profile",
+            fields: {
+                bio: {
+                    name: "bio",
+                    type: "String",
+                    optional: true
+                },
+                website: {
+                    name: "website",
+                    type: "String",
+                    optional: true,
+                    attributes: [{ name: "@url" }]
+                }
+            },
+            attributes: [
+                { name: "@@meta", args: [{ name: "name", value: ExpressionUtils.literal("description") }, { name: "value", value: ExpressionUtils.literal("User profile information") }] }
+            ]
+        }
+    } as const;
+    enums = {
+        Role: {
+            name: "Role",
+            values: {
+                USER: "USER",
+                ADMIN: "ADMIN"
+            },
+            attributes: [
+                { name: "@@meta", args: [{ name: "name", value: ExpressionUtils.literal("description") }, { name: "value", value: ExpressionUtils.literal("The role of a user in the application") }] }
+            ]
         }
     } as const;
     authType = "User" as const;

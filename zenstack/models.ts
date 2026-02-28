@@ -5,8 +5,8 @@
 
 /* eslint-disable */
 
-import { type SchemaType as $Schema } from "./schema";
-import { type ModelResult as $ModelResult } from "@zenstackhq/orm";
+import { schema as $schema, type SchemaType as $Schema } from "./schema";
+import { type ModelResult as $ModelResult, type TypeDefResult as $TypeDefResult } from "@zenstackhq/orm";
 /**
  * User model
  */
@@ -15,3 +15,15 @@ export type User = $ModelResult<$Schema, "User">;
  * Post model
  */
 export type Post = $ModelResult<$Schema, "Post">;
+/**
+ * Profile type definition
+ */
+export type Profile = $TypeDefResult<$Schema, "Profile">;
+/**
+ * User role
+ */
+export const Role = $schema.enums.Role.values;
+/**
+ * User role
+ */
+export type Role = (typeof Role)[keyof typeof Role];
