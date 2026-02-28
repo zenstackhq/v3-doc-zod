@@ -1,5 +1,4 @@
 import { createSchemaFactory } from '@zenstackhq/zod';
-import { createClient } from './db';
 import { schema } from './zenstack/schema';
 
 // Create a schema factory from the ZenStack schema
@@ -9,48 +8,42 @@ const factory = createSchemaFactory(schema);
 const UserSchema = factory.makeModelSchema('User');
 const UserCreateSchema = factory.makeModelCreateSchema('User');
 const UserUpdateSchema = factory.makeModelUpdateSchema('User');
-
-const PostSchema = factory.makeModelSchema('Post');
 const PostCreateSchema = factory.makeModelCreateSchema('Post');
 
-async function main() {
-  const db = await createClient();
+// Valid user create input
+const validUserInput = { email: 'alice@example.com' };
+console.log('UserCreateSchema.parse (valid):', UserCreateSchema.parse(validUserInput));
 
-  // --- Demonstrate Zod validation ---
+// Invalid user create input (wrong type for email)
+const invalidUserInput = { email: 123 };
+const userResult = UserCreateSchema.safeParse(invalidUserInput);
+console.log('UserCreateSchema.safeParse (invalid):', userResult.success ? 'valid' : userResult.error.issues);
 
-  // Valid user create input
-  const validUserInput = { email: 'alice@example.com' };
-  console.log('UserCreateSchema.parse (valid):', UserCreateSchema.parse(validUserInput));
+// Valid post create input
+const validPostInput = { title: 'Hello World', content: 'My first post' };
+console.log('PostCreateSchema.parse (valid):', PostCreateSchema.parse(validPostInput));
 
-  // Invalid user create input (missing required field)
-  const invalidUserInput = { email: 123 };
-  const userResult = UserCreateSchema.safeParse(invalidUserInput);
-  console.log('UserCreateSchema.safeParse (invalid):', userResult.success ? 'valid' : userResult.error.issues);
-
-  // Valid post create input
-  const validPostInput = { title: 'Hello World', content: 'My first post' };
-  console.log('PostCreateSchema.parse (valid):', PostCreateSchema.parse(validPostInput));
-
-  // --- Demonstrate Zod validation against database data ---
-
-  // Create a user with posts in the database
-  const user = await db.user.create({
-    data: {
-      email: 'alice@example.com',
-      posts: {
-        create: [{ title: 'Hello World', content: 'My first post' }],
-      },
+// Validate a full user object (including nested posts) against UserSchema
+const userData = {
+  id: 1,
+  email: 'alice@example.com',
+  posts: [
+    {
+      id: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      title: 'Hello World',
+      content: 'My first post',
+      slug: null,
+      viewCount: 0,
+      published: false,
+      authorId: 1,
     },
-    include: { posts: true },
-  });
+  ],
+};
+const parsed = UserSchema.parse(userData);
+console.log('UserSchema.parse:', JSON.stringify(parsed, null, 2));
 
-  // Validate the returned user data using UserSchema
-  const parsed = UserSchema.parse(user);
-  console.log('UserSchema.parse (db result):', JSON.stringify(parsed, null, 2));
-
-  // Validate a user update payload
-  const userUpdate = UserUpdateSchema.parse({ email: 'alice2@example.com' });
-  console.log('UserUpdateSchema.parse:', userUpdate);
-}
-
-main();
+// Validate a user update payload (all fields are optional)
+const userUpdate = UserUpdateSchema.parse({ email: 'alice2@example.com' });
+console.log('UserUpdateSchema.parse:', userUpdate);
