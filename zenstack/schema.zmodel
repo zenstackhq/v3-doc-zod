@@ -8,36 +8,28 @@ datasource db {
 enum Role {
     USER
     ADMIN
-    @@meta('description', 'The role of a user in the application')
 }
 
 /// Profile type definition
 type Profile {
     bio     String?
     website String? @url
-    @@meta('description', 'User profile information')
 }
 
 /// User model
 model User {
-    id       Int     @id @default(autoincrement())
-    email    String  @unique @email @meta('description', 'The unique email address of the user')
-    role     Role    @default(USER)
-    profile  Profile? @json
-    posts    Post[]
+    id      Int      @id @default(autoincrement())
+    email   String   @unique @email @meta('description', 'The unique email address of the user')
+    role    Role     @default(USER)
+    profile Profile? @json
+    posts   Post[]
     @@meta('description', 'A registered user of the application')
 }
 
 /// Post model
 model Post {
-    id        Int      @id @default(autoincrement())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    title     String
-    content   String?
-    slug      String?  @unique
-    viewCount Int      @default(0)
-    published Boolean  @default(false)
-    author    User?    @relation(fields: [authorId], references: [id])
-    authorId  Int?
+    id       Int    @id @default(autoincrement())
+    title    String
+    author   User?  @relation(fields: [authorId], references: [id])
+    authorId Int?
 }

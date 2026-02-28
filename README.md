@@ -1,4 +1,4 @@
-# ZenStack Zod Integration Sample
+# ZenStack V3 Zod Integration Sample
 
 This project demonstrates how to use the [`@zenstackhq/zod`](https://www.npmjs.com/package/@zenstackhq/zod) package to generate [Zod](https://zod.dev) validation schemas from a [ZenStack](https://zenstack.dev) model.
 
@@ -14,12 +14,4 @@ npm install
 
 ```bash
 npm run dev
-```
-
-## Regenerate Schema
-
-If you modify `zenstack/schema.zmodel`, regenerate the TypeScript schema with:
-
-```bash
-npm run generate
 ```

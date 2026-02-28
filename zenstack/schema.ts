@@ -65,45 +65,9 @@ export class SchemaType implements SchemaDef {
                     attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("autoincrement") }] }],
                     default: ExpressionUtils.call("autoincrement")
                 },
-                createdAt: {
-                    name: "createdAt",
-                    type: "DateTime",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }],
-                    default: ExpressionUtils.call("now")
-                },
-                updatedAt: {
-                    name: "updatedAt",
-                    type: "DateTime",
-                    updatedAt: true,
-                    attributes: [{ name: "@updatedAt" }]
-                },
                 title: {
                     name: "title",
                     type: "String"
-                },
-                content: {
-                    name: "content",
-                    type: "String",
-                    optional: true
-                },
-                slug: {
-                    name: "slug",
-                    type: "String",
-                    unique: true,
-                    optional: true,
-                    attributes: [{ name: "@unique" }]
-                },
-                viewCount: {
-                    name: "viewCount",
-                    type: "Int",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }],
-                    default: 0
-                },
-                published: {
-                    name: "published",
-                    type: "Boolean",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(false) }] }],
-                    default: false
                 },
                 author: {
                     name: "author",
@@ -123,8 +87,7 @@ export class SchemaType implements SchemaDef {
             },
             idFields: ["id"],
             uniqueFields: {
-                id: { type: "Int" },
-                slug: { type: "String" }
+                id: { type: "Int" }
             }
         }
     } as const;
@@ -143,10 +106,7 @@ export class SchemaType implements SchemaDef {
                     optional: true,
                     attributes: [{ name: "@url" }]
                 }
-            },
-            attributes: [
-                { name: "@@meta", args: [{ name: "name", value: ExpressionUtils.literal("description") }, { name: "value", value: ExpressionUtils.literal("User profile information") }] }
-            ]
+            }
         }
     } as const;
     enums = {
@@ -155,10 +115,7 @@ export class SchemaType implements SchemaDef {
             values: {
                 USER: "USER",
                 ADMIN: "ADMIN"
-            },
-            attributes: [
-                { name: "@@meta", args: [{ name: "name", value: ExpressionUtils.literal("description") }, { name: "value", value: ExpressionUtils.literal("The role of a user in the application") }] }
-            ]
+            }
         }
     } as const;
     authType = "User" as const;

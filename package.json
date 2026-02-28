@@ -1,9 +1,9 @@
 {
-    "name": "quick-start",
+    "name": "zenstack-v3-doc-zod",
     "private": true,
     "scripts": {
         "generate": "zen generate",
-        "dev": "tsx main.ts"
+        "dev": "zen generate --silent && tsx main.ts"
     },
     "devDependencies": {
         "@types/node": "^24.1.0",
