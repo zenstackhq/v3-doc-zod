@@ -7,13 +7,13 @@
     },
     "devDependencies": {
         "@types/node": "^24.1.0",
-        "@zenstackhq/cli": "^3.5.1",
+        "@zenstackhq/cli": "^3.5.2",
         "tsx": "^4.20.3",
         "typescript": "^5.8.3"
     },
     "dependencies": {
-        "@zenstackhq/schema": "^3.5.1",
-        "@zenstackhq/zod": "^3.5.1",
+        "@zenstackhq/schema": "^3.5.2",
+        "@zenstackhq/zod": "^3.5.2",
         "zod": "^4.3.6"
     }
 }
