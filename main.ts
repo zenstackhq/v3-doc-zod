@@ -15,14 +15,18 @@ console.log(
 );
 
 // User model's create schema
-const userCreateSchema = factory.makeModelCreateSchema('User');
+const userCreateSchema = factory.makeModelSchema('User',
+    { optionality: 'defaults' }
+);
 console.log(
     'User create schema allows omitting "role"?',
     userCreateSchema.safeParse({ email: 'alice@example.com' }).success,
 );
 
 // User model full schema
-const userSchema = factory.makeModelSchema('User');
+const userSchema = factory.makeModelSchema('User',
+    { include: { posts: true } }
+);
 console.log(
     'User full model allows relations?',
     userSchema.safeParse({
